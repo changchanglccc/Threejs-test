@@ -1,0 +1,6 @@
+.idea
+.vscode
+*.log
+data.json
+map.obj
+README.md
