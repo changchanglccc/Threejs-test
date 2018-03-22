@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+            var camera, scene, renderer;
+            var container;
+
+            init();
+            render();
+            // animate();
+
+			function init(){
+                container = document.createElement('div');
+                document.body.appendChild(container);
+
+				camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
+				camera.position.set(0,0,100);
+			
+				//scene
+				scene = new THREE.Scene();
+
+				// // Begin JSON loader code
+				// var ObjectLoader = new THREE.ObjectLoader();
+				// ObjectLoader.load("../data.json", function(obj){
+				// 	scene.add(obj);
+				// });
+				// // End JSON loader
+                
+                // renderer
+                renderer = new THREE.WebGLRenderer();
+                renderer.setPixelRatio( window.devicePixelRatio);
+                renderer.setSize( window.innerWidth, window.innerHeight);
+                container.appendChild(renderer.domElement);
+                // document.body.appendChild( renderer.domElement );
+                
+                // plane for the ground
+                var planeGeometry = new THREE.PlaneBufferGeometry( 10,20,32);
+                var planeMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00});
+                var plane = new THREE.Mesh( planeGeometry, planeMaterial);
+                plane.position.set(0,0,-1);
+                scene.add(plane);
+
+                // ambient light
+                var ambient = new THREE.AmbientLight( 0x101030);
+                scene.add( ambient);
+
+                // set another light (spot light)
+                var spotlight = new THREE.Spotlight(0xffffff);
+                spotlight.position.set(100, -100, 100);
+                spotlight.castShadow = true;
+                spotlight.shadowMapWidth = 1024;
+                spotlight.shadowMapHeight = 1024;
+                spotlight.shadowCameraNear = 500;
+                spotlight.shadowCameraFar = 4000;
+                spotlight.shadowCameraFov = 30;
+                scene.add(spotlight);
+
+                // obj file
+                var loader = new THREE.OBJLoader();
+                loader.load(
+                    //obj file
+                    'obj/map.obj',
+                    function(object){
+                        object.scale.set(0.01,0.01,0.01);
+                        scene.add(object);
+                    }
+                );
+
+                // camera look at 
+                camera.lookAt(plane.position);
+
+            }
+            
+            function render(){
+                requestAnimationFrame(render);
+                renderer.render(scene, camera);
+            }
+            // function animate(){
+            //     requestAnimationFrame( animate );
+			// 	render();
+            // }
+
+            // function render(){
+			// 	camera.lookAt( scene.position );
+			// 	renderer.render( scene, camera );
+            // }
+
+		</script>
+	</body>
+</html>
