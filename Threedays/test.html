@@ -64,16 +64,52 @@
                 spotlight.shadowCameraFov = 30;
                 scene.add(spotlight);
 
-                // obj file
-                var loader = new THREE.OBJLoader();
-                loader.load(
+                // .obj file
+                var loader1 = new THREE.OBJLoader();
+                loader1.load(
                     //obj file
-                    'obj/map.obj',
+                    'models/obj/map.obj',
                     function(object){
-                        object.scale.set(0.01,0.01,0.01);
+                        // object.scale.set(0.01,0.01,0.01);
                         scene.add(object);
+                    },
+                    // called when loading is in progresses
+                    function ( xhr ) {
+
+                        console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+                    },
+                    // called when loading has errors
+                    function ( error ) {
+
+                        console.log( 'An error happened' );
+
                     }
                 );
+
+                // // object loader: json object
+                // var loader2 = new THREE.ObjectLoader();
+                // loader2.load(
+                //     'models/json/data.json',
+                //     function ( obj ) {
+                //         // Add the loaded object to the scene
+                //         scene.add( obj );
+                //     },
+                
+                //     // onProgress callback
+                //     function ( xhr ) {
+                //         console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+                //     },
+                
+                //     // onError callback
+                //     function ( err ) {
+                //         console.error( 'An error happened' );
+                //     }
+                // );
+
+                var object = loader2.parse( a_json_object );
+
+                scene.add( object );
 
                 // camera look at 
                 camera.lookAt(plane.position);
@@ -84,15 +120,6 @@
                 requestAnimationFrame(render);
                 renderer.render(scene, camera);
             }
-            // function animate(){
-            //     requestAnimationFrame( animate );
-			// 	render();
-            // }
-
-            // function render(){
-			// 	camera.lookAt( scene.position );
-			// 	renderer.render( scene, camera );
-            // }
 
 		</script>
 	</body>
