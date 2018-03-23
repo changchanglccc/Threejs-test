@@ -11,14 +11,11 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script src="js/OBJLoader.js"></script>
-		<!--<script src="js/ObjectLoader.js"></script>-->
-
 		<!--<script type="text/javascript" src="js/TrackballControls.js"></script>-->
-		<!--<script src="js/BufferGeometryLoader.js"></script>-->
 		<script>
             var camera, scene, renderer;
             var container;
-            // var controls, stats;
+            var sprite, particles;
 
             init();
             animate();
@@ -28,7 +25,7 @@
                 document.body.appendChild(container);
 
 				camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
-				camera.position.set(0,0,20);
+				camera.position.set(0,0,1000);	//map use z=20;
 
                 // controls = new THREE.TrackballControls( camera );
 
@@ -58,60 +55,56 @@
                 directionalLight.position.set( 0, 0, 1 ).normalize();
                 scene.add( directionalLight );
 
-                // .obj file
-                console.log('---------1. before loader -------------');
-                var loader = new THREE.OBJLoader();
-                loader.load(
-                    //obj file
-                    'models/obj/map.obj',
-                    function(object){
-                        object.scale.set(0.0005,0.0005,0.0005);
-                        scene.add(object);
-                    },
+                // // .obj file
+                // console.log('---------1. before loader -------------');
+                // var loader = new THREE.OBJLoader();
+                // loader.load(
+                //     //obj file
+                //     'models/obj/map.obj',
+                //     function(object){
+                //         object.scale.set(0.0005,0.0005,0.0005);
+                //         scene.add(object);
+                //     },
+                //
+                //     // called when loading is in progresses
+                //     function ( xhr ) {
+                //
+                //         console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+                //
+                //     },
+                //     // called when loading has errors
+                //     function ( error ) {
+                //
+                //         console.log( '1. An error happened' );
+                //
+                //     }
+                // );
+                // console.log('--------- 1.after loader -------------');
 
-                    // called when loading is in progresses
-                    function ( xhr ) {
 
-                        console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
 
-                    },
-                    // called when loading has errors
-                    function ( error ) {
+				//************************************************
+                // draw one point e.g: "_source":{"X":15.984234,"Y":20.452703,"Z":7.575437}
 
-                        console.log( '1. An error happened' );
+                var geometry = new THREE.Geometry();
+                sprite = new THREE.TextureLoader().load( "textures/disc.png" );
 
-                    }
-                );
-                console.log('--------- 1.after loader -------------');
+                for (var i = 0; i < 10000; i ++ ) {
+                    var vertex = new THREE.Vector3();
+                    vertex.x = 2000 * Math.random() - 1000;
+                    vertex.y = 2000 * Math.random() - 1000;
+                    vertex.z = 2000 * Math.random() - 1000;
+                    geometry.vertices.push( vertex );
+                }
 
-                console.log('--------- 2.before loader -------------');
-                // object loader: json object
-                var jsonLoader =new THREE.ObjectLoader(); //new THREE.JSONLoader(); data.json should use JSONLoader
-                jsonLoader.load(
-                    'models/json/teapot.json',
-                    function ( obj ) {
-                        // Add the loaded object to the scene
-                        // obj.scale.set(0.0001,0.0001,0.0001);
-                        scene.add( obj );
-                    },
+                material = new THREE.PointsMaterial( { size: 35, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
+                material.color.setHSL( 1.0, 0.3, 0.7 );
+                particles = new THREE.Points( geometry, material );
+                scene.add( particles );
 
-                    // onProgress callback
-                    function ( xhr ) {
-                        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-                    },
-
-                    // onError callback
-                    function ( err ) {
-                        console.error( '2. An error happened' );
-                    }
-                );
-                console.log('---------2. after loader -------------');
 
                 // camera look at 
                 camera.lookAt(plane.position);
-
-                // stats = new Stats();
-                // container.appendChild( stats.dom );
 
                 // window.addEventListener( 'resize', onWindowResize, false );
 
