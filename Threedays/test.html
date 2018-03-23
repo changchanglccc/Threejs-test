@@ -7,8 +7,32 @@
 			body { margin: 0; }
 			canvas { width: 100%; height: 100% }
 		</style>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript">
+            // var Ajax = function ()
+            // {
+            //     $.getJSON ("./models/json/data.json", function (data)
+            //     {
+            //         if(data.length === 0){
+            //             console.log("Empty json file");
+				// 	}
+				// 	console.log("Read json file successfully");
+            //         window.jsonFile = data;
+            //         // $.each (data, function (i, item)
+            //         // {
+            //         //     $ ("#disp").append ("<h3>" + item.name + "</h3>");
+            //         //     $ ("#disp").append ("<p>" + item.sex + "</p>");
+            //         //     $ ("#disp").append ("<p>" + item.email + "</p>");
+            //         // });
+            //     });
+            // }
+		</script>
 	</head>
 	<body>
+
+		<!--<input type="button" value="Ajax提交" onclick="Ajax();" />-->
+		<!--<div id="disp"></div>-->
+
 		<script src="js/three.js"></script>
 		<script src="js/OBJLoader.js"></script>
 		<script src="js/OrbitControls.js"></script>
@@ -21,12 +45,12 @@
             animate();
 
 			function init(){
-
+                console.log("there!!!!!!"+window.jsonFile);
                 container = document.createElement('div');
                 document.body.appendChild(container);
 
 				camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
-				camera.position.set(0,0,50);	//map use z=20;
+				camera.position.set(0,0,100);	//map use z=20;
 
                 //scene
                 scene = new THREE.Scene();
@@ -65,7 +89,6 @@
                 controls.maxPolarAngle = Math.PI / 2;
 
                 // .obj file
-                console.log('---------1. before loader -------------');
                 var loader = new THREE.OBJLoader();
                 loader.load(
                     //obj file
@@ -88,12 +111,33 @@
 
                     }
                 );
-                console.log('--------- 1.after loader -------------');
-
-
 
 				//************************************************
-                // draw one point e.g: "_source":{"X":15.984234,"Y":20.452703,"Z":7.575437}
+
+				// try to read .json file
+
+                var Ajax = function ()
+                {
+                    $.getJSON ("./models/json/data.json", function (data)
+                    {
+                        if(data.length === 0){
+                            console.log("Empty json file");
+                        }
+                        console.log("Read json file successfully");
+
+                        data["hits"]["hits"].forEach(function(item){        //{ X: 31.3552, Y: 27.278887, Z: 13.715989 }
+                            var vertex = new THREE.Vector3();
+                            vertex.x = item._source["X"];
+                            vertex.y = item._source["Y"];
+                            vertex.z = item._source["Z"];
+                            console.log(vertex);
+                            geometry.vertices.push( vertex );
+                        });
+                    });
+                }
+				Ajax();
+
+				// draw one point e.g: "_source":{"X":15.984234,"Y":20.452703,"Z":7.575437}
 
                 var geometry = new THREE.Geometry();
                 sprite = new THREE.TextureLoader().load( "textures/disc.png" );
@@ -115,15 +159,15 @@
                 // });
 
 
-                for (var i = 0; i < 10000; i ++ ) {
-                    var vertex = new THREE.Vector3();
-                    vertex.x = 2000 * Math.random() - 1000;
-                    vertex.y = 2000 * Math.random() - 1000;
-                    vertex.z = 2000 * Math.random() - 1000;
-                    geometry.vertices.push( vertex );
-                }
+                // for (var i = 0; i < 10000; i ++ ) {
+                //     var vertex = new THREE.Vector3();
+                //     vertex.x = 2000 * Math.random() - 1000;
+                //     vertex.y = 2000 * Math.random() - 1000;
+                //     vertex.z = 2000 * Math.random() - 1000;
+                //     geometry.vertices.push( vertex );
+                // }
 
-                material = new THREE.PointsMaterial( { size: 5, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
+                material = new THREE.PointsMaterial( { size: 15, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
                 material.color.setHSL( 1.0, 0.3, 0.7 );
                 particles = new THREE.Points( geometry, material );
                 scene.add( particles );
