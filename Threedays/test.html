@@ -11,6 +11,8 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script src="js/OBJLoader.js"></script>
+
+		<!--<script type="text/javascript" src="script.js"></script>-->
 		<!--<script type="text/javascript" src="js/TrackballControls.js"></script>-->
 		<script>
             var camera, scene, renderer;
@@ -25,7 +27,7 @@
                 document.body.appendChild(container);
 
 				camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
-				camera.position.set(0,0,1000);	//map use z=20;
+				camera.position.set(0,0,50);	//map use z=20;
 
                 // controls = new THREE.TrackballControls( camera );
 
@@ -39,12 +41,12 @@
                 container.appendChild(renderer.domElement);
                 // document.body.appendChild( renderer.domElement );
 
-				// plane for the ground
-                var planeGeometry = new THREE.PlaneBufferGeometry( window.innerWidth,window.innerHeight);
-                var planeMaterial = new THREE.MeshBasicMaterial( {color: 0x123456});	//plane color
-                var plane = new THREE.Mesh( planeGeometry, planeMaterial);
-                plane.position.set(0,0,-10);
-                scene.add(plane);
+                // // plane for the ground --plane
+                // var planeGeometry = new THREE.PlaneBufferGeometry( window.innerWidth,window.innerHeight);
+                // var planeMaterial = new THREE.MeshBasicMaterial( {color: 0x123456});	//plane color
+                // var plane = new THREE.Mesh( planeGeometry, planeMaterial);
+                // plane.position.set(0,0,-10);
+                // scene.add(plane);
 
                 // ambient light
                 var ambient = new THREE.AmbientLight( 0x444444);
@@ -55,31 +57,31 @@
                 directionalLight.position.set( 0, 0, 1 ).normalize();
                 scene.add( directionalLight );
 
-                // // .obj file
-                // console.log('---------1. before loader -------------');
-                // var loader = new THREE.OBJLoader();
-                // loader.load(
-                //     //obj file
-                //     'models/obj/map.obj',
-                //     function(object){
-                //         object.scale.set(0.0005,0.0005,0.0005);
-                //         scene.add(object);
-                //     },
-                //
-                //     // called when loading is in progresses
-                //     function ( xhr ) {
-                //
-                //         console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-                //
-                //     },
-                //     // called when loading has errors
-                //     function ( error ) {
-                //
-                //         console.log( '1. An error happened' );
-                //
-                //     }
-                // );
-                // console.log('--------- 1.after loader -------------');
+                // .obj file
+                console.log('---------1. before loader -------------');
+                var loader = new THREE.OBJLoader();
+                loader.load(
+                    //obj file
+                    'models/obj/map.obj',
+                    function(object){
+                        object.scale.set(0.0020,0.0020,0.0020);
+                        scene.add(object);
+                    },
+
+                    // called when loading is in progresses
+                    function ( xhr ) {
+
+                        console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+                    },
+                    // called when loading has errors
+                    function ( error ) {
+
+                        console.log( '1. An error happened' );
+
+                    }
+                );
+                console.log('--------- 1.after loader -------------');
 
 
 
@@ -89,6 +91,23 @@
                 var geometry = new THREE.Geometry();
                 sprite = new THREE.TextureLoader().load( "textures/disc.png" );
 
+                //add all points from data
+                // get {x:,y:,z:};
+
+                // var rawdata = require("./models/json/data.json");
+                //
+                // var data = rawdata["hits"]["hits"];
+                //
+                // data.forEach(function(item){        //{ X: 31.3552, Y: 27.278887, Z: 13.715989 }
+                //     console.log(item._source);
+                //     var vertex = new THREE.Vector3();
+                //     vertex.x = item._source[X];
+                //     vertex.y = item._source[Y];
+                //     vertex.z = item._source[Z];
+                //     geometry.vertices.push( vertex );
+                // });
+
+
                 for (var i = 0; i < 10000; i ++ ) {
                     var vertex = new THREE.Vector3();
                     vertex.x = 2000 * Math.random() - 1000;
@@ -97,14 +116,14 @@
                     geometry.vertices.push( vertex );
                 }
 
-                material = new THREE.PointsMaterial( { size: 35, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
+                material = new THREE.PointsMaterial( { size: 5, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
                 material.color.setHSL( 1.0, 0.3, 0.7 );
                 particles = new THREE.Points( geometry, material );
                 scene.add( particles );
 
 
-                // camera look at 
-                camera.lookAt(plane.position);
+                // camera look at --plane
+                // camera.lookAt(plane.position);
 
                 // window.addEventListener( 'resize', onWindowResize, false );
 
