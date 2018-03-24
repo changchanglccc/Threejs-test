@@ -40,12 +40,12 @@
                 container.appendChild(renderer.domElement);
                 // document.body.appendChild( renderer.domElement );
 
-                // plane for the ground --plane ,help to locate
-                var planeGeometry = new THREE.PlaneBufferGeometry( window.innerWidth,window.innerHeight);
-                var planeMaterial = new THREE.MeshBasicMaterial( {color: 0x123456});	//plane color
-                var plane = new THREE.Mesh( planeGeometry, planeMaterial);
-                plane.position.set(0,0,-10);
-                scene.add(plane);
+                // // plane for the ground --plane ,help to locate
+                // var planeGeometry = new THREE.PlaneBufferGeometry( window.innerWidth,window.innerHeight);
+                // var planeMaterial = new THREE.MeshBasicMaterial( {color: 0x123456});	//plane color
+                // var plane = new THREE.Mesh( planeGeometry, planeMaterial);
+                // plane.position.set(0,0,-10);
+                // scene.add(plane);
 
                 // ambient light
                 var ambient = new THREE.AmbientLight( 0x444444);
@@ -71,7 +71,7 @@
                     //obj file
                     'models/obj/map.obj',
                     function(object){
-                        object.scale.set(0.0030,0.0030,0.0030);
+                        object.scale.set(0.003,0.003,0.003);
                         scene.add(object);
                     },
 
@@ -84,14 +84,12 @@
                     // called when loading has errors
                     function ( error ) {
 
-                        console.log( '1. An error happened' );
+                        console.log( ' An error happened' );
 
                     }
                 );
 
-				//************************************************
-
-				// read .json file, add all points from data
+				// read .json file
                 var geometry = new THREE.Geometry();
                 sprite = new THREE.TextureLoader().load( "textures/disc.png" );
 
@@ -105,8 +103,8 @@
 
                         pushData(geometry, data.hits.hits);
 
-                        material = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: false } );
-                        material.color.setRGB(0,0,0);//setRGB(0,0,0) black //setHSL( 1.0, 0.3, 0.7 );
+                        var material = new THREE.PointsMaterial( { size: 5, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: false } );
+                        material.color.setRGB(1.0,0.4,0.6);//setRGB(0,0,0) black //setHSL( 1.0, 0.3, 0.7 );
                         particles = new THREE.Points( geometry, material );
                         scene.add( particles );
 
@@ -116,18 +114,11 @@
                 Ajax();
 
                 // camera look at --plane
-                camera.lookAt(plane.position);
+                // camera.lookAt(plane.position);
 
                 // window.addEventListener( 'resize', onWindowResize, false );
 
             }
-
-            function transData(data){
-                data.forEach(function(item){        //{ X: 31.3552, Y: 27.278887, Z: 13.715989 }
-                    console.log(item._source);	//objects
-                });
-			}
-
 
 			function pushData(geo, data){
 				data.forEach(function(item){
@@ -141,25 +132,7 @@
 
 			}
 
-
-            // //get local json file
-            // function getJson(){
-            //     fetch('models/json/hello.json')
-            //         .then(function(res){
-            //             return res.json();
-            //             // console.log(res.json());
-            //         })
-				// 	.then(function(data){
-				// 	    return data;
-				// 	})
-				// 	.catch(() => console.log('get json file failed!'));
-            // }
-            // console.log("data length is "+ data.length);
-
-
             function animate(){
-			    // camera.rotation.z += .015;
-
                 requestAnimationFrame(animate);
                 controls.update();
                 renderer.render(scene, camera);
