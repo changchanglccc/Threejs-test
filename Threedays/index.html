@@ -7,37 +7,163 @@
 			body { margin: 0; }
 			canvas { width: 100%; height: 100% }
 		</style>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	</head>
 	<body>
 		<script src="js/three.js"></script>
+		<script src="js/OBJLoader.js"></script>
+		<script src="js/OrbitControls.js"></script>
+
 		<script>
-            // Our Javascript will go here.
-				 //example of threejs website
-			// var THREE = require('three');	
-            var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+            var camera, scene, renderer;
+            var container, controls;
+            var sprite, particles;
 
-			var renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			document.body.appendChild( renderer.domElement );
+            init();
+            animate();
 
-			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-			var cube = new THREE.Mesh( geometry, material );
-			scene.add( cube );
+			function init(){
 
-			camera.position.z = 5;
+                container = document.createElement('div');
+                document.body.appendChild(container);
 
-			var animate = function () {
-				requestAnimationFrame( animate );
+				camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
+				camera.position.set(0,0,500);	//map use z=20;
 
-				cube.rotation.x += 0.1;
-				cube.rotation.y += 0.1;
+                //scene
+                scene = new THREE.Scene();
 
-				renderer.render(scene, camera);
-			};
+                // renderer
+                renderer = new THREE.WebGLRenderer();
+                renderer.setPixelRatio( window.devicePixelRatio);
+                renderer.setSize( window.innerWidth, window.innerHeight);
+                container.appendChild(renderer.domElement);
+                // document.body.appendChild( renderer.domElement );
 
-			animate();
+                // plane for the ground --plane ,help to locate
+                var planeGeometry = new THREE.PlaneBufferGeometry( window.innerWidth,window.innerHeight);
+                var planeMaterial = new THREE.MeshBasicMaterial( {color: 0x123456});	//plane color
+                var plane = new THREE.Mesh( planeGeometry, planeMaterial);
+                plane.position.set(0,0,-10);
+                scene.add(plane);
+
+                // ambient light
+                var ambient = new THREE.AmbientLight( 0x444444);
+                scene.add( ambient);
+
+                // directional light
+                var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+                directionalLight.position.set( 1, 1, 0 ).normalize();
+                scene.add( directionalLight );
+
+                // controls
+                controls = new THREE.OrbitControls( camera );
+                // controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+                // controls.dampingFactor = 0.25;
+                // controls.panningMode = THREE.HorizontalPanning; // default is THREE.ScreenSpacePanning
+                // controls.minDistance = 10;
+                // controls.maxDistance = 200;
+                // controls.maxPolarAngle = Math.PI / 2;
+
+                // .obj file
+                var loader = new THREE.OBJLoader();
+                loader.load(
+                    //obj file
+                    'models/obj/map.obj',
+                    function(object){
+                        object.scale.set(0.0030,0.0030,0.0030);
+                        scene.add(object);
+                    },
+
+                    // called when loading is in progresses
+                    function ( xhr ) {
+
+                        console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+                    },
+                    // called when loading has errors
+                    function ( error ) {
+
+                        console.log( '1. An error happened' );
+
+                    }
+                );
+
+				//************************************************
+
+				// read .json file, add all points from data
+                var geometry = new THREE.Geometry();
+                sprite = new THREE.TextureLoader().load( "textures/disc.png" );
+
+
+                var Ajax = function () {
+					$.getJSON ("models/json/data.json", function (data) {
+						if(data.length === 0){
+							console.log("Empty json file");
+						}
+						console.log("Read json file successfully");
+
+                        pushData(geometry, data.hits.hits);
+
+                        material = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: false } );
+                        material.color.setRGB(0,0,0);//setRGB(0,0,0) black //setHSL( 1.0, 0.3, 0.7 );
+                        particles = new THREE.Points( geometry, material );
+                        scene.add( particles );
+
+					});
+                }
+
+                Ajax();
+
+                // camera look at --plane
+                camera.lookAt(plane.position);
+
+                // window.addEventListener( 'resize', onWindowResize, false );
+
+            }
+
+            function transData(data){
+                data.forEach(function(item){        //{ X: 31.3552, Y: 27.278887, Z: 13.715989 }
+                    console.log(item._source);	//objects
+                });
+			}
+
+
+			function pushData(geo, data){
+				data.forEach(function(item){
+                    var vertex = new THREE.Vector3();
+                    vertex.x = item._source["X"];
+                    vertex.y = item._source["Y"];
+                    vertex.z = item._source["Z"];
+                    // console.log(vertex);
+                    geo.vertices.push(vertex);
+				})
+
+			}
+
+
+            // //get local json file
+            // function getJson(){
+            //     fetch('models/json/hello.json')
+            //         .then(function(res){
+            //             return res.json();
+            //             // console.log(res.json());
+            //         })
+				// 	.then(function(data){
+				// 	    return data;
+				// 	})
+				// 	.catch(() => console.log('get json file failed!'));
+            // }
+            // console.log("data length is "+ data.length);
+
+
+            function animate(){
+			    // camera.rotation.z += .015;
+
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
 
 		</script>
 	</body>

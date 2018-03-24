@@ -1,0 +1,49 @@
+{
+  "_scroll_id": "DnF1NVNYZndBAAAAAAADFC8Wydw==",
+  "took": 3752,
+  "timed_out": false,
+  "_shards": {
+    "total": 3,
+    "successful": 3,
+    "failed": 0
+  },
+  "hits": {
+    "total": 318662,
+    "max_score": 1.0,
+    "hits": [
+      {
+        "_index": "forhonor_v3",
+        "_type": "Position",
+        "_id": "8399a5ab-70af-4d2f-af9d-317f6efe616a_1382",
+        "_score": 1.0,
+        "_source": {
+          "X": 15.984234,
+          "Y": 20.452703,
+          "Z": 7.575437
+        }
+      },
+      {
+        "_index": "forhonor_v3",
+        "_type": "Position",
+        "_id": "8399a5ab-70af-4d2f-af9d-317f6efe616a_1391",
+        "_score": 1.0,
+        "_source": {
+          "X": -6.84798,
+          "Y": 56.52816,
+          "Z": 10.001454
+        }
+      },
+      {
+        "_index": "forhonor_v3",
+        "_type": "Position",
+        "_id": "8399a5ab-70af-4d2f-af9d-317f6efe616a_1483",
+        "_score": 1.0,
+        "_source": {
+          "X": -5.238206,
+          "Y": -1.775685,
+          "Z": 15.621202
+        }
+      }
+    ]
+  }
+}
