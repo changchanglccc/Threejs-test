@@ -28,7 +28,7 @@
                 document.body.appendChild(container);
 
 				camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
-				camera.position.set(0,0,500);	//map use z=20;
+				camera.position.set(0,0,500);
 
                 //scene
                 scene = new THREE.Scene();
@@ -38,14 +38,10 @@
                 renderer.setPixelRatio( window.devicePixelRatio);
                 renderer.setSize( window.innerWidth, window.innerHeight);
                 container.appendChild(renderer.domElement);
-                // document.body.appendChild( renderer.domElement );
 
-                // // plane for the ground --plane ,help to locate
-                // var planeGeometry = new THREE.PlaneBufferGeometry( window.innerWidth,window.innerHeight);
-                // var planeMaterial = new THREE.MeshBasicMaterial( {color: 0x123456});	//plane color
-                // var plane = new THREE.Mesh( planeGeometry, planeMaterial);
-                // plane.position.set(0,0,-10);
-                // scene.add(plane);
+                //add axes to help
+                var axes = new THREE.AxisHelper( 600 );
+                scene.add(axes);
 
                 // ambient light
                 var ambient = new THREE.AmbientLight( 0x444444);
@@ -58,12 +54,6 @@
 
                 // controls
                 controls = new THREE.OrbitControls( camera );
-                // controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-                // controls.dampingFactor = 0.25;
-                // controls.panningMode = THREE.HorizontalPanning; // default is THREE.ScreenSpacePanning
-                // controls.minDistance = 10;
-                // controls.maxDistance = 200;
-                // controls.maxPolarAngle = Math.PI / 2;
 
                 // .obj file
                 var loader = new THREE.OBJLoader();
@@ -71,7 +61,8 @@
                     //obj file
                     'models/obj/map.obj',
                     function(object){
-                        object.scale.set(0.003,0.003,0.003);
+                        object.scale.set(0.02,0.02,0.02);
+                        object.rotateY(-Math.PI*3/5);
                         scene.add(object);
                     },
 
@@ -84,15 +75,15 @@
                     // called when loading has errors
                     function ( error ) {
 
-                        console.log( ' An error happened' );
+                        console.log( ' An error happened: ' + error);
 
                     }
                 );
 
+
 				// read .json file
                 var geometry = new THREE.Geometry();
                 sprite = new THREE.TextureLoader().load( "textures/disc.png" );
-
 
                 var Ajax = function () {
 					$.getJSON ("models/json/data.json", function (data) {
@@ -103,20 +94,17 @@
 
                         pushData(geometry, data.hits.hits);
 
-                        var material = new THREE.PointsMaterial( { size: 5, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: false } );
+                        var material = new THREE.PointsMaterial( { size: 6, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
                         material.color.setRGB(1.0,0.4,0.6);//setRGB(0,0,0) black //setHSL( 1.0, 0.3, 0.7 );
                         particles = new THREE.Points( geometry, material );
+                        particles.rotateX(- Math.PI/2);
+                        particles.rotateZ(-Math.PI/4);
+                        particles.translateZ(30);
                         scene.add( particles );
 
 					});
                 }
-
                 Ajax();
-
-                // camera look at --plane
-                // camera.lookAt(plane.position);
-
-                // window.addEventListener( 'resize', onWindowResize, false );
 
             }
 
@@ -126,7 +114,6 @@
                     vertex.x = item._source["X"];
                     vertex.y = item._source["Y"];
                     vertex.z = item._source["Z"];
-                    // console.log(vertex);
                     geo.vertices.push(vertex);
 				})
 
